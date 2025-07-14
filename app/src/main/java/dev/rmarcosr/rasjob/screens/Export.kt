@@ -22,6 +22,12 @@ import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.saveDataToFile
 
+/**
+ * Represent the export screen ("export" navigation).
+ * @param navController The navigation controller.
+ * @param data The list of work logs.
+ * @param context The context of the application.
+ */
 @Composable
 fun ExportScreen(navController: NavController, data : List<WorkLog>, context: Context){
 
@@ -50,6 +56,15 @@ fun ExportScreen(navController: NavController, data : List<WorkLog>, context: Co
     }
 }
 
+
+/**
+ * Export the data to a CSV file, saving the file in the download directory.
+ * @param context The context of the application.
+ * @param data The list of work logs.
+ * @param deleteData Indicates if the data should be deleted after exporting (true) or not (false).
+ * @param navController The navigation controller.
+ * @see saveDataToFile
+ */
 fun exportData(context: Context, data: List<WorkLog>, deleteData: Boolean, navController: NavController) {
     val csvData = buildString {
         appendLine("day,start,end,duration")

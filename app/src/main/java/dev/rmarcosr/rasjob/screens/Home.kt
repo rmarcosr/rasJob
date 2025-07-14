@@ -40,12 +40,23 @@ import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.deleteWorkLog
 
-
+/**
+ * Represents the main screen of the application ("home" navigation).
+ * @param navController The navigation controller.
+ * @param data The list of work logs.
+ */
 @Composable
 fun MainScreen(navController: NavController, data: List<WorkLog>) {
     CreateTable(data, navController)
 }
 
+
+/**
+ * Create a Table using the work logs
+ * @param data The list of work logs.
+ * @param navController The navigation controller.
+ *
+ */
 @Composable
 fun CreateTable(data: List<WorkLog>, navController: NavController) {
     val headerBackground = Color(0xFFEEEEEE)
@@ -130,7 +141,12 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
     }
 }
 
-
+/**
+ * Represents a table cell.
+ * @param text The text to display in the cell.
+ * @param modifier The modifier to apply to the cell
+ * @param isHeader Indicates if the cell is a header
+ */
 @Composable
 fun TableCell(text: String, modifier: Modifier = Modifier, isHeader: Boolean = false) {
     Box(

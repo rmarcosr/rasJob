@@ -25,7 +25,15 @@ import dev.rmarcosr.rasjob.saveDataToFile
 import java.util.Calendar
 import kotlin.math.abs
 
-
+/**
+ * Represent the add screen ("add" navigation).
+ * @param navController The navigation controller.
+ * @param data The list of work logs.
+ * @param context The context of the application.
+ * @see addNewWorkLog
+ * @see calculateDuration
+ * @see saveDataToFile
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AddScreen(navController: NavController, data : List<WorkLog>, context: Context) {
@@ -161,7 +169,12 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
     }
 }
 
-
+/**
+ * Calculate the duration of the work log, using the start and end time.
+ * @param start The start time of the work log.
+ * @param end The end time of the work log.
+ * @return The duration of the work log.
+ */
 @Composable
 fun calculateDuration(start : String, end : String) : Int{
     var totalMinus by remember { mutableIntStateOf(0) }
@@ -193,7 +206,19 @@ fun calculateDuration(start : String, end : String) : Int{
 }
 
 
-
+/**
+ * Add a new work log to the list.
+ * @param id The unique identifier of the work log.
+ * @param day The day of the work log.
+ * @param start The start time of the work log.
+ * @param end The end time of the work log.
+ * @param duration The duration of the work log.
+ * @param data The list of work logs.
+ * @param context The context of the application.
+ * @param navController The navigation controller.
+ * @see saveDataToFile
+ * @see calculateDuration
+ */
 fun addNewWorkLog(id : Int, day : String, start : String, end : String,
                   duration : Int, data : MutableList<WorkLog>, context: Context, navController: NavController) {
 

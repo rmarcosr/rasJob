@@ -33,7 +33,10 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 
-
+/**
+ * Main activity of the application.
+ * @author Marcos Rodríguez
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +52,12 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Main composable function of the application.
+ * Contain a upper navbar section to navigate on different screens.
+ * @param data The list of work logs.
+ * @param context The context of the application.
+ */
 @Composable
 fun MyApp(data : List<WorkLog>, context: Context) {
     val navController = rememberNavController()
@@ -79,7 +88,15 @@ fun MyApp(data : List<WorkLog>, context: Context) {
     }
 }
 
-
+/**
+ * Class representing a work log.
+ * @property id The unique identifier of the work log.
+ * @property day The day of the work log.
+ * @property start The start time of the work log.
+ * @property end The end time of the work log.
+ * @property duration The duration of the work log.
+ *
+ */
 @Serializable
 data class WorkLog(
     val id: Int,
@@ -89,6 +106,12 @@ data class WorkLog(
     val duration : Int
 )
 
+/**
+ * Obtain the data from the internal storage.
+ * First try to search the file, if don't exist, copy a placeholder file on assets dir.
+ * @param context The context of the application.
+ * @return A empty list of work logs.
+ */
 fun obtainDataToFile(context: Context): List<WorkLog> {
     val filename = "data.json"
     val file = File(context.filesDir, filename)
@@ -118,6 +141,11 @@ fun obtainDataToFile(context: Context): List<WorkLog> {
     return emptyList()
 }
 
+/**
+ * Save the data to the internal storage, casting the list to JSON.
+ * @param context The context of the application.
+ * @param workLogs The list of work logs to save.
+ */
 fun saveDataToFile(context: Context, workLogs: List<WorkLog>, navController: NavController) {
     val filename = "data.json"
     val file = File(context.filesDir, filename)
@@ -133,6 +161,13 @@ fun saveDataToFile(context: Context, workLogs: List<WorkLog>, navController: Nav
     return navController.navigate("home")
 }
 
+/**
+ * Delete a work log from the list using the id.
+ * @param id The id of the work log to delete.
+ * @param data The list of work logs.
+ * @param navController The navigation controller.
+ * @return The navigation to the home screen.
+ */
 fun deleteWorkLog(id : Int, data : MutableList<WorkLog>, navController: NavController){
     data.removeIf { it.id == id }
 
