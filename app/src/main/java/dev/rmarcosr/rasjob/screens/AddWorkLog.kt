@@ -159,9 +159,8 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
 
         // Button to add the work log
         Button(onClick = {
-            addNewWorkLog(id, day, start, end,
-                duration, data as MutableList<WorkLog>,
-                context, navController)
+            val newWorkLog = WorkLog(id, day, start, end, duration)
+            addNewWorkLog(newWorkLog, data as MutableList<WorkLog>, context, navController)
         }, modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth())
@@ -208,23 +207,16 @@ fun calculateDuration(start : String, end : String) : Int{
 
 /**
  * Add a new work log to the list.
- * @param id The unique identifier of the work log.
- * @param day The day of the work log.
- * @param start The start time of the work log.
- * @param end The end time of the work log.
- * @param duration The duration of the work log.
+ * @param newWorkLog The new work log to add.
  * @param data The list of work logs.
  * @param context The context of the application.
  * @param navController The navigation controller.
  * @see saveDataToFile
  * @see calculateDuration
  */
-fun addNewWorkLog(id : Int, day : String, start : String, end : String,
-                  duration : Int, data : MutableList<WorkLog>, context: Context, navController: NavController) {
+fun addNewWorkLog(newWorkLog: WorkLog, data : MutableList<WorkLog>, context: Context, navController: NavController) {
 
-    val workLog = WorkLog(id, day, start, end, duration)
-
-    data.add(workLog);
+    data.add(newWorkLog);
 
     saveDataToFile(context, data, navController)
 
