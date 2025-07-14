@@ -45,7 +45,7 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
 
 
     // State variables for the input fields on WorkLog
-    var id by remember { mutableIntStateOf(data.size+1) }
+    var id by remember { mutableIntStateOf((data.maxOfOrNull { it.id } ?: 0)+1) }
     var day by remember { mutableStateOf("$dayCalendar/${monthCalendar+1}/$yearCalendar") }
     var start by remember { mutableStateOf("") }
     var end by remember { mutableStateOf("") }
