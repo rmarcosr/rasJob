@@ -90,21 +90,20 @@ fun MyApp(data : List<WorkLog>, context: Context) {
 
 /**
  * Class representing a work log.
- * @property id The unique identifier of the work log.
  * @property day The day of the work log.
  * @property start The start time of the work log.
  * @property end The end time of the work log.
  * @property duration The duration of the work log.
- *
+ * @property isNight Indicate if the work log was done in the night.
  */
 @OptIn(kotlinx.serialization.InternalSerializationApi::class)
 @Serializable
 data class WorkLog(
-    val id: Int,
     val day: String,
     val start: String,
     val end: String,
-    val duration : Int
+    val duration : Int,
+    val isNight : Boolean,
 )
 
 /**
@@ -164,13 +163,13 @@ fun saveDataToFile(context: Context, workLogs: List<WorkLog>, navController: Nav
 
 /**
  * Delete a work log from the list using the id.
- * @param id The id of the work log to delete.
+ * @param workLog The the work log to delete.
  * @param data The list of work logs.
  * @param navController The navigation controller.
  * @return The navigation to the home screen.
  */
-fun deleteWorkLog(id : Int, data : MutableList<WorkLog>, navController: NavController){
-    data.removeIf { it.id == id }
+fun deleteWorkLog(workLog: WorkLog, data : MutableList<WorkLog>, navController: NavController){
+    data.remove(workLog)
 
     saveDataToFile(navController.context, data, navController)
 

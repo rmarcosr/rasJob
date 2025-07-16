@@ -67,9 +67,9 @@ fun ExportScreen(navController: NavController, data : List<WorkLog>, context: Co
  */
 fun exportData(context: Context, data: List<WorkLog>, deleteData: Boolean, navController: NavController) {
     val csvData = buildString {
-        appendLine("day,start,end,duration")
+        appendLine("day,start,end,duration,isNight")
         data.forEach { workLog ->
-            appendLine("${workLog.day},${workLog.start},${workLog.end},${workLog.duration}")
+            appendLine("${workLog.day},${workLog.start},${workLog.end},${workLog.duration},${workLog.isNight}")
         }
     }
 

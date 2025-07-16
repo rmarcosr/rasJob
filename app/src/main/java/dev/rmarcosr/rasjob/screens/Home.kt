@@ -124,7 +124,7 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {
-                            deleteWorkLog(workLog.id, data as MutableList<WorkLog>, navController)
+                            deleteWorkLog(workLog, data as MutableList<WorkLog>, navController)
                         }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_delete),

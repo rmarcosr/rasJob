@@ -2,9 +2,11 @@ package dev.rmarcosr.rasjob.screens
 
 import android.content.Context
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -17,6 +19,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -45,11 +48,11 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
 
 
     // State variables for the input fields on WorkLog
-    var id by remember { mutableIntStateOf((data.maxOfOrNull { it.id } ?: 0)+1) }
     var day by remember { mutableStateOf("$dayCalendar/${monthCalendar+1}/$yearCalendar") }
     var start by remember { mutableStateOf("") }
     var end by remember { mutableStateOf("") }
     var duration by remember { mutableIntStateOf(0) }
+    var isNight by remember { mutableStateOf(false) }
 
 
     // Another variables for the dropdown menu
@@ -157,14 +160,26 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
             enabled = false
         )
 
+        //Checkbox to set the work log as night
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = isNight,
+                onCheckedChange = { isNight = it }
+            )
+            Text("Horario nocturno")
+        }
+
         // Button to add the work log
         Button(onClick = {
-            val newWorkLog = WorkLog(id, day, start, end, duration)
+            val newWorkLog = WorkLog(day, start, end, duration, isNight)
             addNewWorkLog(newWorkLog, data as MutableList<WorkLog>, context, navController)
         }, modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth())
         {Text(text = "Añadir")}
+
     }
 }
 
