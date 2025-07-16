@@ -97,6 +97,7 @@ fun MyApp(data : List<WorkLog>, context: Context) {
  * @property duration The duration of the work log.
  *
  */
+@OptIn(kotlinx.serialization.InternalSerializationApi::class)
 @Serializable
 data class WorkLog(
     val id: Int,
