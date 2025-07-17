@@ -115,7 +115,9 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
                         .padding(vertical = 10.dp)
                 ) {
                     TableCell(workLog.day, Modifier.weight(2f))
-                    TableCell(workLog.start.toString(), Modifier.weight(1.5f))
+                    if (workLog.isNight) TableCell("${workLog.start} \uD83C\uDF19", Modifier.weight(1.5f))
+                    else TableCell(workLog.start.toString(), Modifier.weight(1.5f))
+
                     TableCell(workLog.end, Modifier.weight(1.25f))
                     TableCell(workLog.duration.toString(), Modifier.weight(1.4f))
 
