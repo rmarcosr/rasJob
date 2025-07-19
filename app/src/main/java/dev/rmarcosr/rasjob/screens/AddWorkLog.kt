@@ -24,22 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
-import dev.rmarcosr.rasjob.saveDataToFile
+import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import java.util.Calendar
 import kotlin.math.abs
 
-/**
- * Represent the add screen ("add" navigation).
- * @param navController The navigation controller.
- * @param data The list of work logs.
- * @param context The context of the application.
- * @see addNewWorkLog
- * @see calculateDuration
- * @see saveDataToFile
- */
+
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AddScreen(navController: NavController, data : List<WorkLog>, context: Context) {
+fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
     // Variables to obtain a actual Date
     val calendar = Calendar.getInstance()
     val yearCalendar = calendar.get(Calendar.YEAR)
@@ -174,7 +166,7 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
         // Button to add the work log
         Button(onClick = {
             val newWorkLog = WorkLog(day, start, end, duration, isNight)
-            addNewWorkLog(newWorkLog, data as MutableList<WorkLog>, context, navController)
+            addNewWorkLog(newWorkLog, viewModel, context, navController)
         }, modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth())
@@ -220,19 +212,9 @@ fun calculateDuration(start : String, end : String) : Int{
 }
 
 
-/**
- * Add a new work log to the list.
- * @param newWorkLog The new work log to add.
- * @param data The list of work logs.
- * @param context The context of the application.
- * @param navController The navigation controller.
- * @see saveDataToFile
- * @see calculateDuration
- */
-fun addNewWorkLog(newWorkLog: WorkLog, data : MutableList<WorkLog>, context: Context, navController: NavController) {
 
-    data.add(newWorkLog);
-
-    saveDataToFile(context, data, navController)
-
+fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Context, navController: NavController) {
+    viewModel.workLogsList.add(newWorkLog)
+    viewModel.saveDataToFile(context)
+    return navController.navigate("home")
 }
