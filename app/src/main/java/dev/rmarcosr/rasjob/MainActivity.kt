@@ -41,7 +41,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: MainViewModel = viewModel()
             viewModel.obtainDataToFile(this)
-
             RasJobTheme {
                 MyApp(viewModel, this)
             }
@@ -52,7 +51,7 @@ class MainActivity : ComponentActivity() {
 /**
  * Main composable function of the application.
  * Contain a upper navbar section to navigate on different screens.
- * @param data The list of work logs.
+ * @param viewModel The view model to administrate the work logs.
  * @param context The context of the application.
  */
 @Composable

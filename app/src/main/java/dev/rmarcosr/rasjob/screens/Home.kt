@@ -41,7 +41,13 @@ import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 
-
+/**
+ * Main screen of the application.
+ * Show a table with the work logs.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
+ * @param context The context of the application.
+ */
 @Composable
 fun MainScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
     val data = viewModel.workLogsList
@@ -49,7 +55,13 @@ fun MainScreen(navController: NavController, viewModel: MainViewModel, context: 
 }
 
 
-
+/**
+ * Create a extensible table with the work logs.
+ * @param data The list of work logs to show.
+ * @param navController The navigation controller to navigate between screens.
+ * @param context The context of the application.
+ * @param viewModel The view model to administrate the work logs.
+ */
 @Composable
 fun CreateTable(data: List<WorkLog>, navController: NavController, context: Context, viewModel: MainViewModel) {
     val headerBackground = Color(0xFFEEEEEE)
@@ -137,7 +149,13 @@ fun CreateTable(data: List<WorkLog>, navController: NavController, context: Cont
     }
 }
 
-
+/**
+ * Create a table cell.
+ * @param text The text to show in the cell.
+ * @param modifier The modifier to apply to the cell.
+ * @param isHeader Indicate if the cell is a header.
+ * @see CreateTable
+ */
 @Composable
 fun TableCell(text: String, modifier: Modifier = Modifier, isHeader: Boolean = false) {
     Box(

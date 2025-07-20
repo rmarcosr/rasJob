@@ -11,10 +11,21 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
 
+/**
+ * View model to manage the work logs, on the screens.
+ * @see ViewModel
+ */
 class MainViewModel : ViewModel()  {
+
+    // This is the list of work logs used on the screens.
     var workLogsList: SnapshotStateList<WorkLog> = mutableStateListOf()
 
-
+    /**
+     * Obtain the data from the CVS file and casting to work logs list.
+     * @param context The context of the application.
+     * @exception IOException If the file is not found.
+     * @exception SerializationException If the file is not valid.
+     */
     fun obtainDataToFile(context: Context) {
         val filename = "data.json"
         val file = File(context.filesDir, filename)
@@ -35,14 +46,18 @@ class MainViewModel : ViewModel()  {
             workLogsList.addAll(list)
 
         } catch (e: IOException) {
-            println("ERROR OBTENER")
             e.printStackTrace()
         } catch (e: SerializationException) {
-            println("ERROR OBTENER")
             e.printStackTrace()
         }
     }
 
+    /**
+     * Save the data to the CVS file.
+     * @param context The context of the application.
+     * @exception IOException If the file is not found.
+     * @exception SerializationException If the file is not valid.
+     */
     fun saveDataToFile(context: Context) {
         val filename = "data.json"
         val file = File(context.filesDir, filename)
@@ -58,12 +73,22 @@ class MainViewModel : ViewModel()  {
         }
     }
 
-
+    /**
+     * Delete a work log from the list.
+     * @param workLog The work log to delete.
+     * @param context The context of the application.
+     * @see saveDataToFile
+     */
     fun deleteWorkLog(workLog: WorkLog, context: Context){
         workLogsList.remove(workLog)
         saveDataToFile(context)
     }
 
+    /**
+     * Delete all work logs from the list.
+     * @param context The context of the application.
+     * @see saveDataToFile
+     */
     fun deleteAll(context: Context){
         workLogsList.clear()
         saveDataToFile(context)

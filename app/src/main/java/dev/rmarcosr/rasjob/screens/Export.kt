@@ -26,6 +26,12 @@ import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 
+/**
+ * Screen to export and import data.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
+ * @param context The context of the application.
+ */
 @Composable
 fun ExportScreen(navController: NavController, viewModel: MainViewModel, context: Context){
 
@@ -85,7 +91,13 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
     }
 }
 
-
+/**
+ * Export the data to a CSV file.
+ * @param context The context of the application.
+ * @param viewModel The view model to administrate the work logs.
+ * @param deleteData If true, the data will be deleted after exporting.
+ * @param navController The navigation controller to navigate between screens.
+ */
 fun exportData(context: Context, viewModel: MainViewModel, deleteData: Boolean, navController: NavController) {
     val data = viewModel.workLogsList
 
@@ -125,9 +137,16 @@ fun exportData(context: Context, viewModel: MainViewModel, deleteData: Boolean, 
     }
 }
 
+/**
+ * Import data from a CSV file.
+ * @param context The context of the application.
+ * @param uri The URI of the CSV file.
+ * @param viewModel The view model to administrate the work logs.
+ * @return A list of WorkLog objects.
+ */
 fun importData(context: Context , uri: Uri , viewModel : MainViewModel): List<WorkLog> {
     val resolver = context.contentResolver
-    val importData = mutableListOf<WorkLog>()
+    val importedData = mutableListOf<WorkLog>()
 
     resolver.openInputStream(uri)?.bufferedReader()?.useLines { lines ->
         lines.drop(1)
@@ -141,13 +160,13 @@ fun importData(context: Context , uri: Uri , viewModel : MainViewModel): List<Wo
                         duration = parts[3].toInt(),
                         isNight = parts[4].toBoolean()
                     )
-                    importData.add(workLog)
+                    importedData.add(workLog)
 
-                    if (importData.isNotEmpty()){
+                    if (importedData.isNotEmpty()){
                         viewModel.saveDataToFile(context)
                     }
                 }
             }
     }
-    return importData
+    return importedData
 }

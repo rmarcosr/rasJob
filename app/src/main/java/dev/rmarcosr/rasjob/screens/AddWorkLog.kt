@@ -28,7 +28,12 @@ import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import java.util.Calendar
 import kotlin.math.abs
 
-
+/**
+ * Screen to add a new work log.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
+ * @param context The context of the application.
+ */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
@@ -175,6 +180,7 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
     }
 }
 
+
 /**
  * Calculate the duration of the work log, using the start and end time.
  * @param start The start time of the work log.
@@ -212,7 +218,14 @@ fun calculateDuration(start : String, end : String) : Int{
 }
 
 
-
+/**
+ * Add a new work log to the list of work logs.
+ * @param newWorkLog The work log to add.
+ * @param viewModel The view model to administrate the work logs.
+ * @param context The context of the application.
+ * @param navController The navigation controller to navigate between screens.
+ * @see MainViewModel
+ */
 fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Context, navController: NavController) {
     viewModel.workLogsList.add(newWorkLog)
     viewModel.saveDataToFile(context)
