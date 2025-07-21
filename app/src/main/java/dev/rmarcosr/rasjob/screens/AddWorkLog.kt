@@ -46,8 +46,8 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
 
     // State variables for the input fields on WorkLog
     var day by remember { mutableStateOf("$dayCalendar/${monthCalendar+1}/$yearCalendar") }
-    var start by remember { mutableStateOf("") }
-    var end by remember { mutableStateOf("") }
+    var start by remember { mutableStateOf("00:00") }
+    var end by remember { mutableStateOf("00:30") }
     var duration by remember { mutableIntStateOf(0) }
     var isNight by remember { mutableStateOf(false) }
 

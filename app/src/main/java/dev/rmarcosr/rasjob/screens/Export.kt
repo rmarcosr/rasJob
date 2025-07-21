@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
+import java.util.Calendar
 
 /**
  * Screen to export and import data.
@@ -109,8 +110,8 @@ fun exportData(context: Context, viewModel: MainViewModel, deleteData: Boolean, 
             appendLine("${workLog.day},${workLog.start},${workLog.end},${workLog.duration},${workLog.isNight}")
         }
     }
-
-    val fileName = "worklog_export.csv"
+    val calendar = Calendar.getInstance()
+    val fileName = "worklog-${calendar.get(Calendar.DAY_OF_MONTH)}-${calendar.get(Calendar.MONTH)+1}-${calendar.get(Calendar.YEAR)}.csv"
     val resolver = context.contentResolver
 
     val contentValues = ContentValues().apply {
