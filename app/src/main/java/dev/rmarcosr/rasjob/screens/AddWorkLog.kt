@@ -228,6 +228,7 @@ fun calculateDuration(start : String, end : String) : Int{
  */
 fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Context, navController: NavController) {
     viewModel.workLogsList.add(newWorkLog)
+    viewModel.orderByDates()
     viewModel.saveDataToFile(context)
     return navController.navigate("home")
 }

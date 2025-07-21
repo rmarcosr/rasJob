@@ -45,7 +45,9 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     viewModel.saveDataToFile(context)
                     Toast.makeText(context, "Importación completa: ${importedData.size} registros añadidos", Toast.LENGTH_LONG).show()
                     viewModel.workLogsList.addAll(importedData)
+                    viewModel.orderByDates()
                     viewModel.saveDataToFile(context)
+                    return@let navController.navigate("home") // Required @let to avoid error
                 } else {
                     Toast.makeText(context, "No se encontraron datos válidos en el archivo", Toast.LENGTH_LONG).show()
                 }

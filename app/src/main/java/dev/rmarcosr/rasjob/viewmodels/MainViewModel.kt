@@ -10,6 +10,8 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 import java.io.IOException
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * View model to manage the work logs, on the screens.
@@ -92,5 +94,30 @@ class MainViewModel : ViewModel()  {
     fun deleteAll(context: Context){
         workLogsList.clear()
         saveDataToFile(context)
+    }
+
+    /**
+     * Order the work logs by dates.
+     * Used the day and start time to order the work logs.
+     */
+    fun orderByDates() {
+        // Is required used this pattern as  the date format don't uses "0X" numbers
+        val dateFormatter = java.time.format.DateTimeFormatterBuilder()
+            .appendValue(java.time.temporal.ChronoField.DAY_OF_MONTH)
+            .appendLiteral('/')
+            .appendValue(java.time.temporal.ChronoField.MONTH_OF_YEAR)
+            .appendLiteral('/')
+            .appendPattern("yyyy")
+            .toFormatter()
+        val timeFormatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm")
+
+        val sortedList = workLogsList.sortedWith(
+            compareBy(
+                { LocalDate.parse(it.day, dateFormatter) },
+                { LocalTime.parse(it.start, timeFormatter) }
+            )
+        )
+        workLogsList.clear()
+        workLogsList.addAll(sortedList)
     }
 }
