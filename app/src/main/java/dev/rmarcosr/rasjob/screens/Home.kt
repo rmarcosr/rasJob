@@ -2,6 +2,7 @@ package dev.rmarcosr.rasjob.screens
 
 //noinspection SuspiciousImport
 import android.R
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -38,27 +39,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
-import dev.rmarcosr.rasjob.deleteWorkLog
+import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 
 /**
- * Represents the main screen of the application ("home" navigation).
- * @param navController The navigation controller.
- * @param data The list of work logs.
+ * Main screen of the application.
+ * Show a table with the work logs.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
+ * @param context The context of the application.
  */
 @Composable
-fun MainScreen(navController: NavController, data: List<WorkLog>) {
-    CreateTable(data, navController)
+fun MainScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
+    val data = viewModel.workLogsList
+    CreateTable(data, navController, context, viewModel)
 }
 
 
 /**
- * Create a Table using the work logs
- * @param data The list of work logs.
- * @param navController The navigation controller.
- *
+ * Create a extensible table with the work logs.
+ * @param data The list of work logs to show.
+ * @param navController The navigation controller to navigate between screens.
+ * @param context The context of the application.
+ * @param viewModel The view model to administrate the work logs.
  */
 @Composable
-fun CreateTable(data: List<WorkLog>, navController: NavController) {
+fun CreateTable(data: List<WorkLog>, navController: NavController, context: Context, viewModel: MainViewModel) {
     val headerBackground = Color(0xFFEEEEEE)
     val rowBackground = Color(0xFFF9F9F9)
     val borderColor = Color(0xFFDDDDDD)
@@ -115,7 +120,9 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
                         .padding(vertical = 10.dp)
                 ) {
                     TableCell(workLog.day, Modifier.weight(2f))
-                    TableCell(workLog.start.toString(), Modifier.weight(1.5f))
+                    if (workLog.isNight) TableCell("${workLog.start} \uD83C\uDF19", Modifier.weight(1.5f))
+                    else TableCell(workLog.start.toString(), Modifier.weight(1.5f))
+
                     TableCell(workLog.end, Modifier.weight(1.25f))
                     TableCell(workLog.duration.toString(), Modifier.weight(1.4f))
 
@@ -124,7 +131,8 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = {
-                            deleteWorkLog(workLog.id, data as MutableList<WorkLog>, navController)
+                            viewModel.deleteWorkLog(workLog, context)
+                            navController.navigate("home")
                         }) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_delete),
@@ -142,10 +150,11 @@ fun CreateTable(data: List<WorkLog>, navController: NavController) {
 }
 
 /**
- * Represents a table cell.
- * @param text The text to display in the cell.
- * @param modifier The modifier to apply to the cell
- * @param isHeader Indicates if the cell is a header
+ * Create a table cell.
+ * @param text The text to show in the cell.
+ * @param modifier The modifier to apply to the cell.
+ * @param isHeader Indicate if the cell is a header.
+ * @see CreateTable
  */
 @Composable
 fun TableCell(text: String, modifier: Modifier = Modifier, isHeader: Boolean = false) {

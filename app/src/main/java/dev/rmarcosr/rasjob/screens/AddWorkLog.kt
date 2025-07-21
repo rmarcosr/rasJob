@@ -2,9 +2,11 @@ package dev.rmarcosr.rasjob.screens
 
 import android.content.Context
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -17,26 +19,24 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
-import dev.rmarcosr.rasjob.saveDataToFile
+import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import java.util.Calendar
 import kotlin.math.abs
 
 /**
- * Represent the add screen ("add" navigation).
- * @param navController The navigation controller.
- * @param data The list of work logs.
+ * Screen to add a new work log.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
  * @param context The context of the application.
- * @see addNewWorkLog
- * @see calculateDuration
- * @see saveDataToFile
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AddScreen(navController: NavController, data : List<WorkLog>, context: Context) {
+fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
     // Variables to obtain a actual Date
     val calendar = Calendar.getInstance()
     val yearCalendar = calendar.get(Calendar.YEAR)
@@ -45,11 +45,11 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
 
 
     // State variables for the input fields on WorkLog
-    var id by remember { mutableIntStateOf((data.maxOfOrNull { it.id } ?: 0)+1) }
     var day by remember { mutableStateOf("$dayCalendar/${monthCalendar+1}/$yearCalendar") }
     var start by remember { mutableStateOf("") }
     var end by remember { mutableStateOf("") }
     var duration by remember { mutableIntStateOf(0) }
+    var isNight by remember { mutableStateOf(false) }
 
 
     // Another variables for the dropdown menu
@@ -157,16 +157,29 @@ fun AddScreen(navController: NavController, data : List<WorkLog>, context: Conte
             enabled = false
         )
 
+        //Checkbox to set the work log as night
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = isNight,
+                onCheckedChange = { isNight = it }
+            )
+            Text("Horario nocturno")
+        }
+
         // Button to add the work log
         Button(onClick = {
-            val newWorkLog = WorkLog(id, day, start, end, duration)
-            addNewWorkLog(newWorkLog, data as MutableList<WorkLog>, context, navController)
+            val newWorkLog = WorkLog(day, start, end, duration, isNight)
+            addNewWorkLog(newWorkLog, viewModel, context, navController)
         }, modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth())
         {Text(text = "Añadir")}
+
     }
 }
+
 
 /**
  * Calculate the duration of the work log, using the start and end time.
@@ -206,18 +219,16 @@ fun calculateDuration(start : String, end : String) : Int{
 
 
 /**
- * Add a new work log to the list.
- * @param newWorkLog The new work log to add.
- * @param data The list of work logs.
+ * Add a new work log to the list of work logs.
+ * @param newWorkLog The work log to add.
+ * @param viewModel The view model to administrate the work logs.
  * @param context The context of the application.
- * @param navController The navigation controller.
- * @see saveDataToFile
- * @see calculateDuration
+ * @param navController The navigation controller to navigate between screens.
+ * @see MainViewModel
  */
-fun addNewWorkLog(newWorkLog: WorkLog, data : MutableList<WorkLog>, context: Context, navController: NavController) {
-
-    data.add(newWorkLog);
-
-    saveDataToFile(context, data, navController)
-
+fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Context, navController: NavController) {
+    viewModel.workLogsList.add(newWorkLog)
+    viewModel.orderByDates()
+    viewModel.saveDataToFile(context)
+    return navController.navigate("home")
 }

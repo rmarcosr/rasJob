@@ -2,8 +2,12 @@ package dev.rmarcosr.rasjob.screens
 
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -20,56 +24,89 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
-import dev.rmarcosr.rasjob.saveDataToFile
+import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 
 /**
- * Represent the export screen ("export" navigation).
- * @param navController The navigation controller.
- * @param data The list of work logs.
+ * Screen to export and import data.
+ * @param navController The navigation controller to navigate between screens.
+ * @param viewModel The view model to administrate the work logs.
  * @param context The context of the application.
  */
 @Composable
-fun ExportScreen(navController: NavController, data : List<WorkLog>, context: Context){
+fun ExportScreen(navController: NavController, viewModel: MainViewModel, context: Context){
+
+    // Launch the file picker, necessary to import data
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri ->
+            uri?.let {
+               val importedData = importData(context, uri, viewModel)
+                if (importedData.isNotEmpty()) {
+                    viewModel.saveDataToFile(context)
+                    Toast.makeText(context, "Importación completa: ${importedData.size} registros añadidos", Toast.LENGTH_LONG).show()
+                    viewModel.workLogsList.addAll(importedData)
+                    viewModel.orderByDates()
+                    viewModel.saveDataToFile(context)
+                    return@let navController.navigate("home") // Required @let to avoid error
+                } else {
+                    Toast.makeText(context, "No se encontraron datos válidos en el archivo", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    )
 
     var deleteData by remember { mutableStateOf(false) }
 
-    Row(
-        Modifier.padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Checkbox(
-            checked = deleteData,
-            onCheckedChange = { deleteData = it }
-        )
-        Text(
-            text = "Eliminar datos después de exportarlos",
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
+    Column(modifier = Modifier.padding(24.dp)) {
+        Row(
+            Modifier.padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = deleteData,
+                onCheckedChange = { deleteData = it }
+            )
+            Text(
+                text = "Eliminar datos después de exportarlos",
+                modifier = Modifier.padding(start = 8.dp)
+            )
+        }
 
-    Row(
-        Modifier.padding(24.dp)
 
-    ) {
-        Button(onClick = {exportData(context, data, deleteData, navController)}, Modifier.padding(24.dp).fillMaxWidth())
-        {Text(text = "Exportar")}
+        Button(
+            onClick = { exportData(context, viewModel , deleteData, navController) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 24.dp)
+        ) {
+            Text(text = "Exportar")
+        }
+
+        Button(
+            onClick = {
+                launcher.launch(arrayOf("text/csv", "application/octet-stream", "*/*"))
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(text = "Importar")
+        }
     }
 }
 
-
 /**
- * Export the data to a CSV file, saving the file in the download directory.
+ * Export the data to a CSV file.
  * @param context The context of the application.
- * @param data The list of work logs.
- * @param deleteData Indicates if the data should be deleted after exporting (true) or not (false).
- * @param navController The navigation controller.
- * @see saveDataToFile
+ * @param viewModel The view model to administrate the work logs.
+ * @param deleteData If true, the data will be deleted after exporting.
+ * @param navController The navigation controller to navigate between screens.
  */
-fun exportData(context: Context, data: List<WorkLog>, deleteData: Boolean, navController: NavController) {
+fun exportData(context: Context, viewModel: MainViewModel, deleteData: Boolean, navController: NavController) {
+    val data = viewModel.workLogsList
+
     val csvData = buildString {
-        appendLine("day,start,end,duration")
+        appendLine("day,start,end,duration,isNight")
         data.forEach { workLog ->
-            appendLine("${workLog.day},${workLog.start},${workLog.end},${workLog.duration}")
+            appendLine("${workLog.day},${workLog.start},${workLog.end},${workLog.duration},${workLog.isNight}")
         }
     }
 
@@ -97,8 +134,41 @@ fun exportData(context: Context, data: List<WorkLog>, deleteData: Boolean, navCo
     }
 
     if (deleteData){
-        saveDataToFile(context, emptyList(), navController)
-        Toast.makeText(context, "Cierra y abre la app para ver la lista vacia", Toast.LENGTH_LONG).show()
-
+        viewModel.deleteAll(context)
+        return navController.navigate("home")
     }
+}
+
+/**
+ * Import data from a CSV file.
+ * @param context The context of the application.
+ * @param uri The URI of the CSV file.
+ * @param viewModel The view model to administrate the work logs.
+ * @return A list of WorkLog objects.
+ */
+fun importData(context: Context , uri: Uri , viewModel : MainViewModel): List<WorkLog> {
+    val resolver = context.contentResolver
+    val importedData = mutableListOf<WorkLog>()
+
+    resolver.openInputStream(uri)?.bufferedReader()?.useLines { lines ->
+        lines.drop(1)
+            .forEach { line ->
+                val parts = line.split(",")
+                if (parts.size == 5) {
+                    val workLog = WorkLog(
+                        day = parts[0],
+                        start = parts[1],
+                        end = parts[2],
+                        duration = parts[3].toInt(),
+                        isNight = parts[4].toBoolean()
+                    )
+                    importedData.add(workLog)
+
+                    if (importedData.isNotEmpty()){
+                        viewModel.saveDataToFile(context)
+                    }
+                }
+            }
+    }
+    return importedData
 }
