@@ -119,7 +119,7 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        "Horas de noche: ${(viewModel.nightDuration.toDouble()) / 60} (${viewModel.totalDuration} minutos)",
+                        "Horas de noche: ${(viewModel.nightDuration.toDouble()) / 60} (${viewModel.nightDuration} minutos)",
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )
