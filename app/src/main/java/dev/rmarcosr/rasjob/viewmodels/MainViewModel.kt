@@ -1,7 +1,10 @@
 package dev.rmarcosr.rasjob.viewmodels
 
 import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import dev.rmarcosr.rasjob.WorkLog
@@ -21,6 +24,10 @@ class MainViewModel : ViewModel()  {
 
     // This is the list of work logs used on the screens.
     var workLogsList: SnapshotStateList<WorkLog> = mutableStateListOf()
+
+    var totalDuration by mutableIntStateOf(0)
+
+    var nightDuration by mutableIntStateOf(0)
 
     /**
      * Obtain the data from the CVS file and casting to work logs list.
@@ -46,6 +53,8 @@ class MainViewModel : ViewModel()  {
 
             workLogsList.clear()
             workLogsList.addAll(list)
+            totalDuration = calculateTotalDuration(workLogsList)
+            nightDuration = calculateNightDuration(workLogsList)
 
         } catch (e: IOException) {
             e.printStackTrace()
@@ -120,4 +129,33 @@ class MainViewModel : ViewModel()  {
         workLogsList.clear()
         workLogsList.addAll(sortedList)
     }
+}
+
+
+/**
+ * Calculate the total duration of the work logs.
+ * @param workLogs The list of work logs.
+ * @return The total duration of the work logs.
+ */
+fun calculateTotalDuration(workLogs: List<WorkLog>): Int {
+    var duration = 0
+
+    for (workLog in workLogs) { duration += workLog.duration }
+    return duration
+}
+
+/**
+ * Calculate the total duration of the work logs in night.
+ * @param workLogs The list of work logs.
+ * @return The total duration of the work logs in night.
+ */
+fun calculateNightDuration(workLogs: List<WorkLog>): Int {
+    var duration = 0
+
+    for (workLog in workLogs) {
+        if (workLog.isNight) {
+            duration += workLog.duration
+        }
+    }
+    return duration
 }
