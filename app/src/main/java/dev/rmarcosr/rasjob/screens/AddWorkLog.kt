@@ -79,14 +79,22 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
         }
 
         // Button to add the work log
-        Button(onClick = {
-            val newWorkLog = WorkLog(viewModel.day, viewModel.start, viewModel.end, duration, isNight)
-            addNewWorkLog(newWorkLog, viewModel, context, navController)
-        }, modifier = Modifier
-            .padding(16.dp)
-            .fillMaxWidth())
-        {Text(text = "Añadir")}
-
+        if (viewModel.day != "" && viewModel.start != "" && viewModel.end != ""){
+            Button(onClick = {
+                val newWorkLog = WorkLog(viewModel.day, viewModel.start, viewModel.end, duration, isNight)
+                addNewWorkLog(newWorkLog, viewModel, context, navController)
+            }, modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth())
+            {Text(text = "Añadir")}
+        } else {
+            Button(onClick = {},
+                enabled = false,
+                modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth())
+            {Text(text = "Añadir")}
+        }
     }
 }
 
@@ -139,5 +147,8 @@ fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Contex
     viewModel.workLogsList.add(newWorkLog)
     viewModel.orderByDates()
     viewModel.saveDataToFile(context)
+    viewModel.day = ""
+    viewModel.start = ""
+    viewModel.end = ""
     return navController.navigate("home")
 }
