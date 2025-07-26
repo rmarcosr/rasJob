@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -28,6 +29,12 @@ class MainViewModel : ViewModel()  {
     var totalDuration by mutableIntStateOf(0)
 
     var nightDuration by mutableIntStateOf(0)
+
+    // Variables to add a new work log (obtained values from the input fields components)
+    var day by mutableStateOf("")
+    var start by mutableStateOf("")
+    var end by mutableStateOf("")
+
 
     /**
      * Obtain the data from the CVS file and casting to work logs list.
