@@ -13,15 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dev.rmarcosr.rasjob.components.ButtonGroup
 import dev.rmarcosr.rasjob.components.onClick
@@ -60,11 +59,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(viewModel: MainViewModel, context: Context) {
     val navController = rememberNavController()
-
-    var selectedIndex by remember { mutableIntStateOf(0) }
+    val selectedIndex = rememberSelectedIndex(navController)
 
     Column(Modifier.fillMaxSize()) {
-        // Upper navbar sections
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,10 +70,9 @@ fun MyApp(viewModel: MainViewModel, context: Context) {
         ) {
             ButtonGroup(
                 options = listOf("Inicio", "Añadir", "Exportar"),
-                selectedIndex = selectedIndex, onOptionSelected = {
-                    selectedIndex = it
-                    onClick(it, navController)
-                })
+                selectedIndex = selectedIndex,
+                onOptionSelected = { index -> onClick(index, navController) }
+            )
         }
 
         Box(modifier = Modifier.weight(1f)) {
@@ -86,6 +82,17 @@ fun MyApp(viewModel: MainViewModel, context: Context) {
                 composable("export") { ExportScreen(navController, viewModel, context) }
             }
         }
+    }
+}
+
+@Composable
+fun rememberSelectedIndex(navController: NavController): Int {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    return when (navBackStackEntry?.destination?.route) {
+        "home" -> 0
+        "add" -> 1
+        "export" -> 2
+        else -> 0
     }
 }
 
