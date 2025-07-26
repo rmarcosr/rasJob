@@ -46,7 +46,6 @@ fun DatePickerFieldToModal(mainViewModel : MainViewModel, modifier: Modifier = M
 
     if (showModal) {
         DatePickerModal(
-            mainViewModel = mainViewModel,
             onDateSelected = {
                 selectedDate = it
                 mainViewModel.day = convertMillisToDate(it) },
@@ -63,7 +62,6 @@ fun convertMillisToDate(millis: Long): String {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(
-    mainViewModel: MainViewModel,
     onDateSelected: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {

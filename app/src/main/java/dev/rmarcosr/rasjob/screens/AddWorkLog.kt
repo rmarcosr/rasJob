@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +24,6 @@ import dev.rmarcosr.rasjob.WorkLog
 import dev.rmarcosr.rasjob.components.DatePickerFieldToModal
 import dev.rmarcosr.rasjob.components.HourField
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
-import java.util.Calendar
 import kotlin.math.abs
 
 /**
@@ -39,36 +35,10 @@ import kotlin.math.abs
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
-    // Variables to obtain a actual Date TODO Delete in the next commit
-    val calendar = Calendar.getInstance()
-    val yearCalendar = calendar.get(Calendar.YEAR)
-    val monthCalendar = calendar.get(Calendar.MONTH)
-    val dayCalendar = calendar.get(Calendar.DAY_OF_MONTH)
-
 
     // State variables for the input fields on WorkLog
-    var day by remember { mutableStateOf(viewModel.day) }
-    var start by remember { mutableStateOf(viewModel.start) }
-    var end by remember { mutableStateOf(viewModel.end) }
     var duration by remember { mutableIntStateOf(0) }
     var isNight by remember { mutableStateOf(false) }
-
-
-    // Another variables for the dropdown menu TODO Delete in the next commit
-    var expandedStart by remember { mutableStateOf(false) }
-    var expandedEnd by remember { mutableStateOf(false) }
-    val times = listOf("00:00", "00:30", "01:00", "01:30",
-        "02:00", "02:30", "03:00", "03:30",
-        "04:00", "04:30", "05:00", "05:30",
-        "06:00", "06:30", "07:00", "07:30",
-        "08:00", "08:30", "09:00", "09:30",
-        "10:00", "10:30", "11:00", "11:30",
-        "12:00", "12:30", "13:00", "13:30",
-        "14:00", "14:30", "15:00", "15:30",
-        "16:00", "16:30", "17:00", "17:30",
-        "18:00", "18:30", "19:00", "19:30",
-        "20:00", "20:30", "21:00", "21:30",
-        "22:00", "22:30", "23:00", "23:30")
 
 
     Column(
