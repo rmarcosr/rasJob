@@ -18,6 +18,12 @@ import java.util.Date
 import java.util.Locale
 
 
+/**
+ * Component:
+ * Date picker field to select a date.
+ * @param mainViewModel The view model to manage the work logs.
+ * @param modifier The modifier to apply to the component. (Optional)
+ */
 @Composable
 fun DatePickerFieldToModal(mainViewModel : MainViewModel, modifier: Modifier = Modifier) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
@@ -59,6 +65,13 @@ fun convertMillisToDate(millis: Long): String {
     return formatter.format(Date(millis))
 }
 
+/**
+ * Component:
+ * Date picker modal to select a date.
+ * @param onDateSelected The function to call when a date is selected.
+ * @param onDismiss The function to call when the modal is dismissed.
+ * @see DatePickerFieldToModal
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerModal(

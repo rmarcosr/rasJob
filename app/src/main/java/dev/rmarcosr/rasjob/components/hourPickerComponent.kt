@@ -26,7 +26,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import java.util.Calendar
 
-
+/**
+ * Component:
+ * Hour field to select a hour.
+ * @param text The text to show on the field.
+ * @param mainViewModel The view model to manage the work logs.
+ * @param isStart Indicate if the field is for the start time.
+ * @param modifier The modifier to apply to the component. (Optional)
+ */
 @SuppressLint("DefaultLocale")
 @Composable
 fun HourField(
@@ -74,9 +81,13 @@ fun HourField(
     }
 }
 
-
-
-
+/**
+ * Component:
+ * Hour picker dialog to select a hour.
+ * @param onConfirm The function to call when a hour is selected.
+ * @param onDismiss The function to call when the dialog is dismissed.
+ * @see HourField
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HourPickerDialog(

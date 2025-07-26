@@ -93,8 +93,7 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
 
 /**
  * Calculate the duration of the work log, using the start and end time.
- * @param start The start time of the work log.
- * @param end The end time of the work log.
+ * @param mainViewModel The view model to administrate the start and end time.
  * @return The duration of the work log.
  */
 @Composable

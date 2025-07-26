@@ -13,6 +13,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
+/**
+ * Component:
+ * Button group to navigate on different screens.
+ * @param options The list of options to navigate.
+ * @param selectedIndex The index of the selected option.
+ * @param onOptionSelected The function to call when an option is selected.
+ */
 @Composable
 fun ButtonGroup(
     options: List<String>,
@@ -43,6 +50,12 @@ fun ButtonGroup(
     }
 }
 
+/**
+ * Function used when press a button on the button group.
+ * @param index The index of the button pressed.
+ * @param navController The navigation controller to navigate between screens.
+ * @see ButtonGroup
+ */
 fun onClick(index: Int, navController: NavController) {
     when (index) {
         0 -> navController.navigate("home")

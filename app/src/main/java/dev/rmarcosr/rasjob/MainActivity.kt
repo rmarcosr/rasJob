@@ -85,6 +85,11 @@ fun MyApp(viewModel: MainViewModel, context: Context) {
     }
 }
 
+/**
+ * Remember the selected index of the bottom navigation bar.
+ * @param navController The navigation controller to navigate between screens.
+ * @return The selected index of the bottom navigation bar.
+ */
 @Composable
 fun rememberSelectedIndex(navController: NavController): Int {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
