@@ -43,9 +43,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: MainViewModel = viewModel()
             viewModel.obtainDataToFile(this)
-            RasJobTheme {
-                MyApp(viewModel, this)
-            }
+            MyApp(viewModel, this)
         }
     }
 }
