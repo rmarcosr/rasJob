@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
+import dev.rmarcosr.rasjob.components.DatePickerFieldToModal
+import dev.rmarcosr.rasjob.components.HourField
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import java.util.Calendar
 import kotlin.math.abs
@@ -37,7 +39,7 @@ import kotlin.math.abs
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
-    // Variables to obtain a actual Date
+    // Variables to obtain a actual Date TODO Delete in the next commit
     val calendar = Calendar.getInstance()
     val yearCalendar = calendar.get(Calendar.YEAR)
     val monthCalendar = calendar.get(Calendar.MONTH)
@@ -45,14 +47,14 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
 
 
     // State variables for the input fields on WorkLog
-    var day by remember { mutableStateOf("$dayCalendar/${monthCalendar+1}/$yearCalendar") }
-    var start by remember { mutableStateOf("00:00") }
-    var end by remember { mutableStateOf("00:30") }
+    var day by remember { mutableStateOf(viewModel.day) }
+    var start by remember { mutableStateOf(viewModel.start) }
+    var end by remember { mutableStateOf(viewModel.end) }
     var duration by remember { mutableIntStateOf(0) }
     var isNight by remember { mutableStateOf(false) }
 
 
-    // Another variables for the dropdown menu
+    // Another variables for the dropdown menu TODO Delete in the next commit
     var expandedStart by remember { mutableStateOf(false) }
     var expandedEnd by remember { mutableStateOf(false) }
     val times = listOf("00:00", "00:30", "01:00", "01:30",
@@ -77,78 +79,16 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
         Text(text = "Añadir nuevo registro")
 
         // Input field for the Day
-        OutlinedTextField(
-            value = day ,
-            onValueChange = { day = it } ,
-            label = { Text("Día") } ,
-            modifier = Modifier.fillMaxWidth()
-        )
+        DatePickerFieldToModal(viewModel)
 
-        // Dropdown menu for the start time
-        ExposedDropdownMenuBox(
-            expanded = expandedStart,
-            onExpandedChange = { expandedStart = !expandedStart }
-        ) {
-            OutlinedTextField(
-                readOnly = true,
-                value = start,
-                onValueChange = {},
-                label = { Text("Hora de inicio") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedStart) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
+        // Input field for the Start (true) and End Time (false)
+        HourField("Hora de inicio", viewModel, true)
 
-            ExposedDropdownMenu(
-                expanded = expandedStart,
-                onDismissRequest = { expandedStart = false }
-            ) {
-                times.forEach { time ->
-                    DropdownMenuItem(
-                        text = { Text(time) },
-                        onClick = {
-                            start = time
-                            expandedStart = false
-                        }
-                    )
-                }
-            }
-        }
-        // Dropdown menu for the end time
-        ExposedDropdownMenuBox(
-            expanded = expandedEnd,
-            onExpandedChange = { expandedEnd = !expandedEnd }
-        ) {
-            OutlinedTextField(
-                readOnly = true,
-                value = end,
-                onValueChange = {},
-                label = { Text("Hora de salida") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expandedEnd) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
+        HourField("Hora de salida", viewModel, false)
 
-            ExposedDropdownMenu(
-                expanded = expandedEnd,
-                onDismissRequest = { expandedEnd = false }
-            ) {
-                times.forEach { time ->
-                    DropdownMenuItem(
-                        text = { Text(time) },
-                        onClick = {
-                            end = time
-                            expandedEnd = false
-                        }
-                    )
-                }
-            }
-        }
 
         // Input field for the Duration (calculated)
-        duration = calculateDuration(start, end)
+        duration = calculateDuration(viewModel)
         OutlinedTextField(
             value = duration.toString(),
             onValueChange = { duration = it.toInt() } ,
@@ -170,7 +110,7 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
 
         // Button to add the work log
         Button(onClick = {
-            val newWorkLog = WorkLog(day, start, end, duration, isNight)
+            val newWorkLog = WorkLog(viewModel.day, viewModel.start, viewModel.end, duration, isNight)
             addNewWorkLog(newWorkLog, viewModel, context, navController)
         }, modifier = Modifier
             .padding(16.dp)
@@ -188,18 +128,18 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
  * @return The duration of the work log.
  */
 @Composable
-fun calculateDuration(start : String, end : String) : Int{
+fun calculateDuration(mainViewModel: MainViewModel) : Int{
     var totalMinus by remember { mutableIntStateOf(0) }
 
-    if (start != "" && end != ""){
+    if (mainViewModel.start != "" && mainViewModel.end != ""){
 
         // First Convert a List and separate the hours and minutes
-        var startTime = start.split(":")
+        var startTime = mainViewModel.start.split(":")
 
         // Convert the hours and minutes to minutes
         var startMinus = (startTime[0].toInt() * 60) + startTime[1].toInt()
 
-        var endTime = end.split(":")
+        var endTime = mainViewModel.end.split(":")
 
         var endMinus = (endTime[0].toInt() * 60) + endTime[1].toInt()
 
