@@ -1,5 +1,6 @@
 package dev.rmarcosr.rasjob.screens
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
@@ -37,6 +38,7 @@ import java.util.Calendar
  * @param viewModel The view model to administrate the work logs.
  * @param context The context of the application.
  */
+@SuppressLint("DefaultLocale")
 @Composable
 fun ExportScreen(navController: NavController, viewModel: MainViewModel, context: Context){
 
@@ -108,7 +110,7 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        "Horas totales: ${(viewModel.totalDuration.toDouble()) / 60} (${viewModel.totalDuration} minutos)",
+                        "Horas totales: ${String.format("%.2f", viewModel.totalDuration / 60.0)}  (${viewModel.totalDuration} minutos)",
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -119,7 +121,7 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        "Horas de noche: ${(viewModel.nightDuration.toDouble()) / 60} (${viewModel.nightDuration} minutos)",
+                        "Horas de noche: ${String.format("%.2f", viewModel.nightDuration / 60.0)} (${viewModel.nightDuration} minutos)",
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )
