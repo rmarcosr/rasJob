@@ -42,6 +42,10 @@ import java.util.Calendar
 @Composable
 fun ExportScreen(navController: NavController, viewModel: MainViewModel, context: Context){
 
+    var totalHours ="${String.format("%.2f", viewModel.totalDuration / 60.0)}  (${viewModel.totalDuration} minutos)"
+
+    var totalNightHours ="${String.format("%.2f", viewModel.nightDuration / 60.0)} (${viewModel.nightDuration} minutos)"
+
     // Launch the file picker, necessary to import data
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -110,7 +114,7 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     verticalAlignment = Alignment.Top
                 ) {
                     Text(
-                        "Horas totales: ${String.format("%.2f", viewModel.totalDuration / 60.0)}  (${viewModel.totalDuration} minutos)",
+                        "Horas totales: $totalHours",
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -121,15 +125,13 @@ fun ExportScreen(navController: NavController, viewModel: MainViewModel, context
                     verticalAlignment = Alignment.Bottom
                 ) {
                     Text(
-                        "Horas de noche: ${String.format("%.2f", viewModel.nightDuration / 60.0)} (${viewModel.nightDuration} minutos)",
+                        "Horas de noche: $totalNightHours",
                         textAlign = TextAlign.End,
                         modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
         }
-
-
     }
 }
 
