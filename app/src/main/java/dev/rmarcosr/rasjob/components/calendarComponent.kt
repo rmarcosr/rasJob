@@ -25,7 +25,7 @@ import java.util.Locale
  * @param modifier The modifier to apply to the component. (Optional)
  */
 @Composable
-fun DatePickerFieldToModal(mainViewModel : MainViewModel, modifier: Modifier = Modifier) {
+fun DatePickerField(mainViewModel : MainViewModel , modifier: Modifier = Modifier) {
     var selectedDate by remember { mutableStateOf<Long?>(null) }
     var showModal by remember { mutableStateOf(false) }
 
@@ -51,7 +51,7 @@ fun DatePickerFieldToModal(mainViewModel : MainViewModel, modifier: Modifier = M
     )
 
     if (showModal) {
-        DatePickerModal(
+        DatePickerDialog(
             onDateSelected = {
                 selectedDate = it
                 mainViewModel.day = convertMillisToDate(it) },
@@ -70,11 +70,11 @@ fun convertMillisToDate(millis: Long): String {
  * Date picker modal to select a date.
  * @param onDateSelected The function to call when a date is selected.
  * @param onDismiss The function to call when the modal is dismissed.
- * @see DatePickerFieldToModal
+ * @see DatePickerField
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerModal(
+fun DatePickerDialog(
     onDateSelected: (Long) -> Unit,
     onDismiss: () -> Unit
 ) {

@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import dev.rmarcosr.rasjob.WorkLog
-import dev.rmarcosr.rasjob.components.DatePickerFieldToModal
+import dev.rmarcosr.rasjob.components.DatePickerField
 import dev.rmarcosr.rasjob.components.HourField
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import kotlin.math.abs
@@ -49,7 +49,7 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
         Text(text = "Añadir nuevo registro")
 
         // Input field for the Day
-        DatePickerFieldToModal(viewModel)
+        DatePickerField(viewModel)
 
         // Input field for the Start (true) and End Time (false)
         HourField("Hora de inicio", viewModel, true)
