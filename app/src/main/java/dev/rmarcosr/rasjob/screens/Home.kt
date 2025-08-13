@@ -1,7 +1,6 @@
 package dev.rmarcosr.rasjob.screens
 
-//noinspection SuspiciousImport
-import android.R
+import dev.rmarcosr.rasjob.R
 import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -135,10 +134,10 @@ fun CreateTable(data: List<WorkLog>, navController: NavController, context: Cont
                             navController.navigate("home")
                         }) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_delete),
+                                painter = painterResource(id = R.drawable.ic_delete_icon),
                                 contentDescription = "Eliminar",
                                 tint = Color.Red,
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(40.dp)
                                     .padding(start = 0.dp, end = 15.dp, bottom = 15.dp, top = 0.dp),
                             )
                         }
