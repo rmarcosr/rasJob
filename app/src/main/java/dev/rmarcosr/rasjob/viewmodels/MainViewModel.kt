@@ -21,7 +21,7 @@ import java.time.LocalTime
  * View model to manage the work logs, on the screens.
  * @see ViewModel
  */
-class MainViewModel : ViewModel()  {
+class MainViewModel : ViewModel() {
 
     // This is the list of work logs used on the screens.
     var workLogsList: SnapshotStateList<WorkLog> = mutableStateListOf()
@@ -35,6 +35,27 @@ class MainViewModel : ViewModel()  {
     var start by mutableStateOf("")
     var end by mutableStateOf("")
 
+    fun saveWorkLog(newWorkLog: WorkLog , oldWorkLog: WorkLog? , context: Context) {
+        if (oldWorkLog != null) {
+            val index = workLogsList.indexOf(oldWorkLog)
+            if (index != -1) {
+                workLogsList[index] = newWorkLog
+            }
+        } else {
+            workLogsList.add(newWorkLog)
+        }
+
+        orderByDates()
+        saveDataToFile(context)
+
+        totalDuration = calculateTotalDuration(workLogsList)
+        nightDuration = calculateNightDuration(workLogsList)
+
+        day = ""
+        start = ""
+        end = ""
+    }
+
 
     /**
      * Obtain the data from the CVS file and casting to work logs list.
@@ -44,7 +65,7 @@ class MainViewModel : ViewModel()  {
      */
     fun obtainDataToFile(context: Context) {
         val filename = "data.json"
-        val file = File(context.filesDir, filename)
+        val file = File(context.filesDir , filename)
 
         try {
             if (!file.exists()) {
@@ -78,11 +99,11 @@ class MainViewModel : ViewModel()  {
      */
     fun saveDataToFile(context: Context) {
         val filename = "data.json"
-        val file = File(context.filesDir, filename)
+        val file = File(context.filesDir , filename)
 
         try {
             val jsonString = Json.encodeToString(workLogsList.toList())
-            file.writeText(jsonString, Charsets.UTF_8)
+            file.writeText(jsonString , Charsets.UTF_8)
         } catch (exception: IOException) {
             exception.printStackTrace()
 
@@ -97,7 +118,7 @@ class MainViewModel : ViewModel()  {
      * @param context The context of the application.
      * @see saveDataToFile
      */
-    fun deleteWorkLog(workLog: WorkLog, context: Context){
+    fun deleteWorkLog(workLog: WorkLog , context: Context) {
         workLogsList.remove(workLog)
         saveDataToFile(context)
     }
@@ -107,7 +128,7 @@ class MainViewModel : ViewModel()  {
      * @param context The context of the application.
      * @see saveDataToFile
      */
-    fun deleteAll(context: Context){
+    fun deleteAll(context: Context) {
         workLogsList.clear()
         saveDataToFile(context)
     }
@@ -129,8 +150,8 @@ class MainViewModel : ViewModel()  {
 
         val sortedList = workLogsList.sortedWith(
             compareBy(
-                { LocalDate.parse(it.day, dateFormatter) },
-                { LocalTime.parse(it.start, timeFormatter) }
+                { LocalDate.parse(it.day , dateFormatter) } ,
+                { LocalTime.parse(it.start , timeFormatter) }
             )
         )
         workLogsList.clear()
@@ -147,7 +168,9 @@ class MainViewModel : ViewModel()  {
 fun calculateTotalDuration(workLogs: List<WorkLog>): Int {
     var duration = 0
 
-    for (workLog in workLogs) { duration += workLog.duration }
+    for (workLog in workLogs) {
+        duration += workLog.duration
+    }
     return duration
 }
 

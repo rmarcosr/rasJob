@@ -1,6 +1,7 @@
 package dev.rmarcosr.rasjob
 
 import android.content.Context
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,18 +19,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import dev.rmarcosr.rasjob.components.ButtonGroup
 import dev.rmarcosr.rasjob.components.onClick
 import dev.rmarcosr.rasjob.screens.AddScreen
 import dev.rmarcosr.rasjob.screens.ExportScreen
 import dev.rmarcosr.rasjob.screens.MainScreen
-import dev.rmarcosr.rasjob.ui.theme.RasJobTheme
 import dev.rmarcosr.rasjob.viewmodels.MainViewModel
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 
 
 /**
@@ -43,7 +46,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel: MainViewModel = viewModel()
             viewModel.obtainDataToFile(this)
-            MyApp(viewModel, this)
+            MyApp(viewModel , this)
         }
     }
 }
@@ -55,7 +58,7 @@ class MainActivity : ComponentActivity() {
  * @param context The context of the application.
  */
 @Composable
-fun MyApp(viewModel: MainViewModel, context: Context) {
+fun MyApp(viewModel: MainViewModel , context: Context) {
     val navController = rememberNavController()
     val selectedIndex = rememberSelectedIndex(navController)
 
@@ -63,21 +66,31 @@ fun MyApp(viewModel: MainViewModel, context: Context) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 50.dp, start = 25.dp, end = 25.dp, bottom = 10.dp),
+                .padding(top = 50.dp , start = 25.dp , end = 25.dp , bottom = 10.dp) ,
             verticalAlignment = Alignment.CenterVertically
         ) {
             ButtonGroup(
-                options = listOf("Inicio", "Añadir", "Exportar"),
-                selectedIndex = selectedIndex,
-                onOptionSelected = { index -> onClick(index, navController) }
+                options = listOf("Inicio" , "Añadir" , "Exportar") ,
+                selectedIndex = selectedIndex ,
+                onOptionSelected = { index -> onClick(index , navController) }
             )
         }
 
         Box(modifier = Modifier.weight(1f)) {
-            NavHost(navController = navController, startDestination = "home") {
-                composable("home") { MainScreen(navController, viewModel, context) }
-                composable("add") { AddScreen(navController, viewModel, context) }
-                composable("export") { ExportScreen(navController, viewModel, context) }
+            NavHost(navController = navController , startDestination = "home") {
+                composable("home") { MainScreen(navController , viewModel , context) }
+                composable("add") { AddScreen(navController , viewModel , context , null) }
+                composable("export") { ExportScreen(navController , viewModel , context) }
+                composable(
+                    "edit/{worklogJson}" , arguments = listOf(
+                        navArgument("worklogJson")
+                        { type = NavType.StringType })
+                ) { backStackEntry ->
+                    val json = backStackEntry.arguments?.getString("worklogJson")
+                    val decodedJson = Uri.decode(json)
+                    val workLog = Json.decodeFromString<WorkLog>(decodedJson)
+                    AddScreen(navController , viewModel , context , workLog = workLog)
+                }
             }
         }
     }
@@ -110,11 +123,11 @@ fun rememberSelectedIndex(navController: NavController): Int {
 @OptIn(kotlinx.serialization.InternalSerializationApi::class)
 @Serializable
 data class WorkLog(
-    val day: String,
-    val start: String,
-    val end: String,
-    val duration : Int,
-    val isNight : Boolean,
+    val day: String ,
+    val start: String ,
+    val end: String ,
+    val duration: Int ,
+    val isNight: Boolean ,
 )
 
 

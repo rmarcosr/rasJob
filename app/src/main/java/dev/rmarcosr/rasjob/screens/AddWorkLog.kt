@@ -11,6 +11,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,36 +35,57 @@ import kotlin.math.abs
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun AddScreen(navController: NavController, viewModel: MainViewModel, context: Context) {
+fun AddScreen(
+    navController: NavController ,
+    viewModel: MainViewModel ,
+    context: Context ,
+    workLog: WorkLog?
+) {
+
+    // Edit mode instead create mode
+    val isEditing = workLog != null
 
     // State variables for the input fields on WorkLog
-    var duration by remember { mutableIntStateOf(0) }
-    var isNight by remember { mutableStateOf(false) }
+    var duration by remember { mutableIntStateOf(workLog?.duration ?: 0) }
+    var isNight by remember { mutableStateOf(workLog?.isNight == true) }
 
+    LaunchedEffect(workLog) {
+        if (isEditing) {
+            viewModel.day = workLog.day
+            viewModel.start = workLog.start
+            viewModel.end = workLog.end
+            isNight = workLog.isNight
+        } else {
+            viewModel.day = ""
+            viewModel.start = ""
+            viewModel.end = ""
+            isNight = false
+        }
+    }
 
     Column(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
     ) {
-        Text(text = "Añadir nuevo registro")
+        Text(text = if (workLog == null) "Añadir nuevo registro" else "Editar registro")
 
         // Input field for the Day
         DatePickerField(viewModel)
 
         // Input field for the Start (true) and End Time (false)
-        HourField("Hora de inicio", viewModel, true)
+        HourField("Hora de inicio" , viewModel , true)
 
-        HourField("Hora de salida", viewModel, false)
+        HourField("Hora de salida" , viewModel , false)
 
 
         // Input field for the Duration (calculated)
         duration = calculateDuration(viewModel)
         OutlinedTextField(
-            value = duration.toString(),
+            value = duration.toString() ,
             onValueChange = { duration = it.toInt() } ,
             label = { Text("Duración") } ,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth() ,
             enabled = false
         )
 
@@ -72,32 +94,41 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(
-                checked = isNight,
+                checked = isNight ,
                 onCheckedChange = { isNight = it }
             )
             Text("Horario nocturno")
         }
 
+        val isFormValid =
+            viewModel.day.isNotEmpty() && viewModel.start.isNotEmpty() && viewModel.end.isNotEmpty()
+
         // Button to add the work log
-        if (viewModel.day != "" && viewModel.start != "" && viewModel.end != ""){
-            Button(onClick = {
-                val newWorkLog = WorkLog(viewModel.day, viewModel.start, viewModel.end, duration, isNight)
-                addNewWorkLog(newWorkLog, viewModel, context, navController)
-            }, modifier = Modifier
+        Button(
+            onClick = {
+                if (isFormValid) {
+                    val newWorkLog = WorkLog(
+                        day = viewModel.day ,
+                        start = viewModel.start ,
+                        end = viewModel.end ,
+                        duration = duration ,
+                        isNight = isNight
+                    )
+                    viewModel.saveWorkLog(newWorkLog , workLog , context)
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                }
+            } ,
+            modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth())
-            {Text(text = "Añadir")}
-        } else {
-            Button(onClick = {},
-                enabled = false,
-                modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth())
-            {Text(text = "Añadir")}
+                .fillMaxWidth() ,
+            enabled = isFormValid
+        ) {
+            Text(text = if (isEditing) "Guardar Cambios" else "Añadir")
         }
     }
 }
-
 
 /**
  * Calculate the duration of the work log, using the start and end time.
@@ -105,10 +136,10 @@ fun AddScreen(navController: NavController, viewModel: MainViewModel, context: C
  * @return The duration of the work log.
  */
 @Composable
-fun calculateDuration(mainViewModel: MainViewModel) : Int{
+fun calculateDuration(mainViewModel: MainViewModel): Int {
     var totalMinus by remember { mutableIntStateOf(0) }
 
-    if (mainViewModel.start != "" && mainViewModel.end != ""){
+    if (mainViewModel.start != "" && mainViewModel.end != "") {
 
         // First Convert a List and separate the hours and minutes
         var startTime = mainViewModel.start.split(":")
@@ -121,10 +152,9 @@ fun calculateDuration(mainViewModel: MainViewModel) : Int{
         var endMinus = (endTime[0].toInt() * 60) + endTime[1].toInt()
 
         // Verify if the end time is greater than the start time to pass a new day
-        totalMinus = if (endMinus > startMinus){
+        totalMinus = if (endMinus > startMinus) {
             endMinus - startMinus
-        }
-        else(endMinus + 1440) - startMinus
+        } else (endMinus + 1440) - startMinus
 
         // Finally convert the result to absolute (delete a negative number)
         totalMinus = abs(totalMinus)
@@ -134,21 +164,3 @@ fun calculateDuration(mainViewModel: MainViewModel) : Int{
     return 0
 }
 
-
-/**
- * Add a new work log to the list of work logs.
- * @param newWorkLog The work log to add.
- * @param viewModel The view model to administrate the work logs.
- * @param context The context of the application.
- * @param navController The navigation controller to navigate between screens.
- * @see MainViewModel
- */
-fun addNewWorkLog(newWorkLog: WorkLog, viewModel: MainViewModel, context: Context, navController: NavController) {
-    viewModel.workLogsList.add(newWorkLog)
-    viewModel.orderByDates()
-    viewModel.saveDataToFile(context)
-    viewModel.day = ""
-    viewModel.start = ""
-    viewModel.end = ""
-    return navController.navigate("home")
-}
